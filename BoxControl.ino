@@ -12,15 +12,17 @@ const uint32_t SERVO_ANGLE_TIGHT = 100;
 #define IR_RX_PIN 3
 #define BT_RX_PIN 10
 #define BT_TX_PIN 11
-#define SERVO_PIN 9
+
+#define SERVO_NUM 4
+const int SERVO_PINS[SERVO_NUM] = {6, 7, 8, 9};
 
 IRrecv ir(IR_RX_PIN, LED_PIN);
 SoftwareSerial bt(BT_RX_PIN, BT_TX_PIN); // RX, TX
-Servo servo;
+Servo servos[SERVO_NUM];
 
-#define SERVO_ATTACH() servo.attach(SERVO_PIN)
-#define SERVO_TIGHT() servo.write(SERVO_ANGLE_LOOSE)
-#define SERVO_LOOSE() servo.write(SERVO_ANGLE_TIGHT)
+#define SERVO_ATTACH() do { for (uint8_t i = 0; i < SERVO_NUM; i++) servos[i].attach(SERVO_PINS[i]); } while(0)
+#define SERVO_TIGHT()  do { for (uint8_t i = 0; i < SERVO_NUM; i++) servos[i].write(SERVO_ANGLE_LOOSE); } while(0)
+#define SERVO_LOOSE()  do { for (uint8_t i = 0; i < SERVO_NUM; i++) servos[i].write(SERVO_ANGLE_TIGHT); } while(0)
 #define LED_ON() digitalWrite(LED_PIN, HIGH)
 #define LED_OFF() digitalWrite(LED_PIN, LOW)
 #define LED_TOG() digitalWrite(LED_PIN, !digitalRead(LED_PIN))
@@ -42,10 +44,15 @@ void setup()
 
 void switchStateCmd(uint8_t cmd)
 {
-  if (cmd == SERVO_CMD_LOOSE) {
-    SERVO_LOOSE();
-  } else if (cmd == SERVO_CMD_TIGHT) {
-    SERVO_TIGHT();
+  switch (cmd) {
+    case SERVO_CMD_LOOSE:
+      SERVO_LOOSE();
+      break;
+    case SERVO_CMD_TIGHT:
+      SERVO_TIGHT();
+      break;
+     default:
+      break;
   }
 }
 
